@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LISA CENTRAL UNIT</title>
+    <link rel="stylesheet" href="/webGuiStatic/stile.css">
+</head>
+
+<body>
+
+    <div class="title">Lisa Central Unit</div>
+    <p class="subtitle">drag and drop in the drawing</p>
+
+    <div class="container">
+        <canvas id="observatoryCanvas" width="500" height="500"></canvas>
+
+        <div class="controls-wrapper">
+            <div class="control-group">
+                <div class="control-label">Rotazione cupola: <span id="lblDome">180.0°</span></div>
+                <div class="slider-container">
+                    <span>0°</span>
+                    <input type="range" id="slideDome" min="0" max="360" step="0.1" value="180">
+                    <span>360°</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Rotazione telescopio: <span id="lblScope">144.0°</span></div>
+                <div class="slider-container">
+                    <span>0°</span>
+                    <input type="range" id="slideScope" min="0" max="360" step="0.1" value="144">
+                    <span>360°</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Inclinazione telescopio: <span id="lblTilt">45.0°</span></div>
+                <div class="slider-container">
+                    <span>0° (Orizzonte)</span>
+                    <input type="range" id="slideTilt" min="0" max="90" step="0.1" value="45">
+                    <span>90° (Zenit)</span>
+                </div>
+            </div>
+
+            <div class="buttons-group">
+                <button class="btn" id="btnSlit" onclick="toggleSlit()">Apri Feritoia</button>
+                <button class="btn" onclick="sendToLisa()">Invia a LISA!</button>
+            </div>
+        </div>
+
+        <div class="terminal-container">
+            <div class="terminal-log" id="termLog">
+                <div>[SYSTEM] LISA Central Unit v1.0.0 Online.</div>
+                <div>[SYSTEM] Digita 'HELP' per la lista dei comandi.</div>
+            </div>
+            <div class="terminal-input-row">
+                <span class="terminal-prompt">LISA&gt;</span>
+                <input type="text" class="terminal-input" id="termInput" placeholder="Inserisci comando..." autocomplete="off">
+                <button class="btn-term" id="btnTerm">Invia</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/webGuiStatic/canvas.js"></script>
+
+</body>
+</html>

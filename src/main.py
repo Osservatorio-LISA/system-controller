@@ -1,0 +1,92 @@
+# ======================================================================================================================================= #
+#                                               LISA MAIN CONTROLLER | Version 1.1.0                                                      #
+#                                           Coordination hub for the LISA Observatory modules.                                            #
+# ======================================================================================================================================= #
+#                                                   Interaction with modules
+# --------------------------------------------------------------------------------------------------------------------------------------- #
+#  - sending commands : The controller sends requests to modules using http requests with RESTfull API system. (more in http_interface.py)
+#  - receiving data   : Modules connects to an internal TCP server to send JSON status updates,
+#                       NOTE: the server should provide each module with his IP and port in order to have less hard coded IPs and Ports.
+#                       Each module must have a specific tcp_handler function (more in TCPServer.py and modules_handler folder)
+#  - local sync       : A real-time copy of modules status is kept in a dictionary within global_state.py for quick access.
+#                       (more in global_state.py)
+#  - heartbeat        : A 'keep-alive' signal used to monitor system health and detect failures. (more in tcpHandler.py)
+#                       
+# --------------------------------------------------------------------------------------------------------------------------------------- #
+#                                                       Commands Handling 
+# --------------------------------------------------------------------------------------------------------------------------------------- #
+# commands are obtained via en external interface (more in ext_interface.py) but elaboration is in a thread that waits for a command, 
+# parses it and executes it (more in cmd_handler.py) the controller can differentiate two kind of commands.
+#
+# - Status Queries    : If a command asks for information we pull it directly from global_status.
+# - Action            : if command requires an action, we send a request to a module and  immediately returns to listening mode.
+#                       upon completion a module must send back an "ok" status along updated status in a JSON format. In case of an
+#                       error a module specific error routine is called to handle the situation. 
+# ======================================================================================================================================= #
+__doc__ = "main"
+__brief__ = "Coordination hub for the LISA Observatory modules"
+__author__ = "Alessandro Maryni"
+
+# built-in libraries
+import threading
+import socket
+# installed libraries
+from flask import Flask
+# custom libraries
+import ext_interface
+from cmd_handler    import cmd_parser
+from web_gui_interface import gui_bp
+# module custom handler libraries
+from modules_handlers.dome_handler import dome_tcp_handler
+
+app = Flask(__name__)
+app.register_blueprint(gui_bp)
+
+server_ip = ""
+
+threading.Thread(target=ext_interface.wait_for_input, daemon=True).start() #terminal input daemon
+
+
+# in main_src: .\.venv\Scripts\Activate.ps1
+# anywhere   : deactivate
+
+#RASPBERRY PI OS (no FULL e no LITE)
+#se no Raspberry pi os 32
+#se no Raspberry pi bookworm
+
+# TODO: you MUST send IP and PORT to devices!!! NOT IMPLEMENTED YET!!!
+
+
+
+# ======================================================================================== #
+#                                           ENTRY_POINT                                    #
+# ======================================================================================== #
+if __name__ == "__main__":
+    # print IP address of the machine
+    hostname  = socket.gethostname()
+    server_ip = socket.gethostbyname(hostname)
+    print(f"SERVER IP : {server_ip}") #debug
+
+    
+    # ----------------- TCP SERVER INITIALIZATIONS -----------------------
+    # --- dome ---
+    dome = dome_tcp_handler()
+    dome.config_dome_tcp_socket()
+    dome.start()
+    dome.check()
+    # ---------------- CMD_PARSING INITIALIZATION -----------------------
+    input_thread = threading.Thread(target=cmd_parser, daemon=True)
+    input_thread.start()
+#    try:
+#        while input_thread.is_alive():
+#            input_thread.join(timeout=1.0)
+#    except KeyboardInterrupt:
+#        print("Shutdown requested via Ctrl+C")
+#    
+    #------------------ Web interface ------------------------------------
+    #NOTE: app.run is blocking()
+    app.run(host=server_ip, port=5000, debug=False, use_reloader=False)
+    print(f"WEB interface at http://{server_ip}:5000/")
+
+    print("Cleaning up and exiting...")
+
