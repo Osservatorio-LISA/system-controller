@@ -74,12 +74,38 @@ and a virtual command terminal.
 ## Setup & Running
 
 1. **Prerequisites**: Ensure Python 3.x and `pip` are installed on your Raspberry Pi.
-2. **Install Dependencies**:
- ```bash
- pip install flask
+2. **open a virtual environment**:
+```bash
+  cd src
+  python -m venv .venv
  ```
-3. **Execution**: Run the main controller application:
- ```Bash
-python main.py
- ```
+NOTE: in Linux this could not work on first atempt, follow terminal instruction\
+
+now we have to activate the virtual environment, this command is different if we are on Windows or a Linux distro:
+- for Windows
+  ```bash
+  .venv\Scripts\activate
+  ```
+- for Linux
+  ```bash
+  source .venv/bin/activate
+  ```
+3. **Install Dependencies**:
+   ```bash
+   pip install flask
+   ```
+4. **Execution**: Run the main controller application:
+   ```Bash
+    python main.py
+   ```
+5. **close**
+   first we close virtual environment
+    ```bash
+      deactivate
+     ```
+    then exit terminal
+    ```bash
+      exit
+    ```
+   
 
