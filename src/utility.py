@@ -1,10 +1,21 @@
 import json
+import socket
 
 # time definition
 FIVE_MINUTES = 300
 TEN_MINUTES  = 600
 
-# utility function that finds a json object in a string and returns it.
+# =============================================================================================== #
+#                                            GET_JSON_DAT                                         #
+# =============================================================================================== #
+# this function finds and returns the last recurrence of a json object in a string or bytes 
+# example:
+# "@test {"object1":"this is a test"} something here {"object2": "hello world!"}something else here"
+# -> {"object2": "hello world!"}
+# 
+# NOTE: this function will fail if a string like this is given "{"hello":"hi"}something{"
+# but in this application is really hard
+# =============================================================================================== #
 def get_json_data(raw_data : str | bytes | memoryview):
     """ utility function that finds and extract json in a string """
     # converting raw data in string
@@ -34,6 +45,32 @@ def get_json_data(raw_data : str | bytes | memoryview):
     except Exception as e:
         print(f"Error in json string {raw_data} : {e}")
         return None
+
+# =============================================================================================== #
+#                                            GET_REAL_IP                                          #
+# =============================================================================================== #
+# This function was added because getting IP via 
+# hostname  = socket.gethostname()
+# server_ip = socket.gethostbyname(hostname)
+#
+# would always return localhost in linux based machines unless modifying /etc/hosts. 
+# This function opens a socket UDP (using his connectionless property) to get the IP of the machine
+# via connect() function. Than closes the socket.
+# =============================================================================================== #
+def get_real_ip() -> str:
+    # initializing a UDP socket (SOCK_DGRAM instead of SOCK_STREAM)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 1))
+        #NOTE: here we take the first element (ip) of the socket (ip, port)
+        IP = s.getsockname()[0] 
+    except Exception:
+        #in case we fail we still try to get an IP even though is probably 127.0.1.1
+        IP = socket.gethostbyname(socket.gethostname())
+    finally:
+        s.close()
+    return IP
+
     
 # =============================================================================================== #
 #                               Angle conversions   #    NOT USED AS FOR NOW                      #

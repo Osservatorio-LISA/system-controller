@@ -29,11 +29,11 @@ __author__ = "Alessandro Maryni"
 
 # built-in libraries
 import threading
-import socket
 # installed libraries
 from flask import Flask
 # custom libraries
 import ext_interface
+from utility import get_real_ip
 from cmd_handler    import cmd_parser
 from web_gui_interface import gui_bp
 # module custom handler libraries
@@ -47,7 +47,7 @@ server_ip = ""
 threading.Thread(target=ext_interface.wait_for_input, daemon=True).start() #terminal input daemon
 
 
-# in main_src: .\.venv\Scripts\Activate.ps1
+# in main_src on Windows : .venv\Scripts\activate
 # anywhere   : deactivate
 
 #RASPBERRY PI OS (no FULL e no LITE)
@@ -63,8 +63,7 @@ threading.Thread(target=ext_interface.wait_for_input, daemon=True).start() #term
 # ======================================================================================== #
 if __name__ == "__main__":
     # print IP address of the machine
-    hostname  = socket.gethostname()
-    server_ip = socket.gethostbyname(hostname)
+    server_ip = get_real_ip()
     print(f"SERVER IP : {server_ip}") #debug
 
     
