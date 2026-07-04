@@ -4,6 +4,8 @@ __author__  = "Alessandro Maryni"
 import ext_interface
 import global_state
 from http_interface import http_fetch_request
+
+from sys            import exit
 from time           import sleep
 
 from modules_handlers.dome_handler import *
@@ -52,15 +54,17 @@ def cmd_parser():
                 # TODO: send to all modules a shut-off message
                 # dome_handle_HOME_command();
                 #kill web interface
-                from main import server_ip
                 try :
-                    ok, body = http_fetch_request(f"{server_ip}:5000", "POST", "/shutdown", {})
+                    ok, body = http_fetch_request(f"{global_state.get_IP('self')}:5000", "POST", "/shutdown")
                     if not ok:
                         print(f"Impossibile arrestare Flask via HTTP: {body}")
                 except Exception as e:
                     print(f"Impossibile arrestare Flask via HTTP: {e}")
-
-                break
+                    print("forcing exit...")
+                    exit(0)
+                finally:
+                    break
+                    
             else:
                 ext_interface.send_response(f"[ WARNING ] invalid command: {cmd}")
                 sleep(3)

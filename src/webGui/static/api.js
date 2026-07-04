@@ -10,7 +10,11 @@
 
 import { KEYS, POLL_KEYS } from "/webGuiStatic/Keys.js";
 
-const FLASK_BASE = 'http://192.168.86.123:5000'; //<- IP del server
+const serverIP   = window.location.hostname;
+const serverPort = window.location.port; 
+
+
+const FLASK_BASE = `http://${serverIP}:${serverPort}`; //<- IP del server
 
  
 export const POLLING_PERIOD_MS = 10000;

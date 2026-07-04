@@ -137,8 +137,7 @@ class dome_tcp_handler(BaseTcpModuleHandler):
     #-----------------------------------------------------------------------
     def config_dome_tcp_socket(self) -> bool:
         """configure dome's tcp socket"""
-        from utility import get_real_ip
-        ok, body  = http_fetch_request(global_state.get_IP("dome"), "PUT", "/network/tcp-socket", {"IP": get_real_ip(), "port" : global_state.get_port("dome")})
+        ok, body  = http_fetch_request(global_state.get_IP("dome"), "PUT", "/network/tcp-socket", {"IP": global_state.get_IP("self"), "port" : global_state.get_port("dome")})
             
         if(not ok): 
             ext_interface.send_response(f"[ WARNING ] could not set dome tcp socket : {body}")

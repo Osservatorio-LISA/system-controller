@@ -10,6 +10,7 @@ __author__ = "Alessandro Maryni"
 
 import threading
 import copy
+from ipaddress import ip_address
 
 from ext_interface import send_response
 
@@ -22,6 +23,10 @@ from modules_handlers.slit_handler import *
 
 MODULES = {
     # All values are in config.py
+    "self":{
+        "IP"    : "",
+        "port"  : 5000 #for flask web server
+    },
     "dome":{
         "IP"    : DOME_IP, 
         "port"  : DOME_PORT
@@ -67,6 +72,7 @@ GLOBAL_STATE = {
 }
 
 STATE_LOCKS = {
+    "self"      : threading.Lock(),
     "dome"      : threading.Lock(),
     "slit"      : threading.Lock(),
     "telescope" : threading.Lock(),
@@ -98,15 +104,44 @@ def print_all_keys_of_a_module( module : str):
     print(f"\nmodule: {module}")
     for key , value in GLOBAL_STATE[module].items():
         print(f"  {key}: {value}")
+        
+def set_IP( module: str , new_ip : str) -> bool:
+    """
+    set IP address of a particular module
+    """
+    if module in MODULES:
+        try:
+            ip_address(new_ip)
+        except ValueError:
+            return False
+        
+        with STATE_LOCKS[module]:
+            MODULES[module]["IP"] = new_ip
+        return True
 
 def get_IP( module : str ) -> str :
     """
     get IP address of a particular module
     """
     if module in MODULES and "IP" in MODULES[module]:
-        return MODULES[module]["IP"]
+        with STATE_LOCKS[module]:
+            ip =  MODULES[module]["IP"]
+        return ip
     else:
         return ""
+   
+def set_port( module : str, new_port : int ) -> bool:
+    """
+    set port of a particular module
+    """
+    if module in MODULES:
+        
+        if new_port <= 0:
+            return False
+        
+        with STATE_LOCKS[module]:
+            MODULES[module]["port"] = new_port
+        return True
     
 def get_port( module : str ) -> int :
     """

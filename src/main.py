@@ -29,20 +29,27 @@ __author__ = "Alessandro Maryni"
 
 # built-in libraries
 import threading
+import logging
+from os      import environ
 # installed libraries
 from flask import Flask
 # custom libraries
 import ext_interface
-from utility import get_real_ip
-from cmd_handler    import cmd_parser
+import global_state
+
+from utility           import get_real_ip
+from cmd_handler       import cmd_parser
 from web_gui_interface import gui_bp
 # module custom handler libraries
 from modules_handlers.dome_handler import dome_tcp_handler
 
+environ["FLASK_ENV"] = "production"
+#flask is really verbose, this prints only error messages
+flask_logger = logging.getLogger("werkzeug")
+flask_logger.setLevel(logging.ERROR)
+#setup of flask
 app = Flask(__name__)
 app.register_blueprint(gui_bp)
-
-server_ip = ""
 
 threading.Thread(target=ext_interface.wait_for_input, daemon=True).start() #terminal input daemon
 
@@ -63,8 +70,9 @@ threading.Thread(target=ext_interface.wait_for_input, daemon=True).start() #term
 # ======================================================================================== #
 if __name__ == "__main__":
     # print IP address of the machine
-    server_ip = get_real_ip()
-    print(f"SERVER IP : {server_ip}") #debug
+    global_state.set_IP("self", get_real_ip())
+    global_state.set_port("self", 5000)
+    print(f"SERVER IP : {global_state.get_IP('self')}") #debug
 
     
     # ----------------- TCP SERVER INITIALIZATIONS -----------------------
@@ -84,8 +92,8 @@ if __name__ == "__main__":
 #    
     #------------------ Web interface ------------------------------------
     #NOTE: app.run is blocking()
-    app.run(host=server_ip, port=5000, debug=False, use_reloader=False)
-    print(f"WEB interface at http://{server_ip}:5000/")
+    print(f"WEB interface at http://{global_state.get_IP('self')}:{global_state.get_port("self")}/")
+    app.run(host=global_state.get_IP("self"), port=global_state.get_port("self"), debug=False, use_reloader=False)
 
     print("Cleaning up and exiting...")
 
