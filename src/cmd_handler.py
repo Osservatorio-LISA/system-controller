@@ -17,7 +17,7 @@ def cmd_parser():
     while True:
         try:
             cmd = ext_interface.get_cmd()
-            print(f"DEBUG: {cmd}")
+            #print(f"DEBUG: {cmd}")
             if cmd == None:
                 continue
             elif cmd == "YIELD":

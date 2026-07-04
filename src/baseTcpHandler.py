@@ -70,7 +70,7 @@ class BaseTcpModuleHandler(ABC):
             return False
         if not self.server.StartConnectionListener():
             return False
-        send_response(f"[ info ] {self.name} server started at port {global_state.get_port(self.name)}")
+        send_response(f"[ INFO ] {self.name} server started at port {global_state.get_port(self.name)}")
         Thread(target=self.handle_tcp_connection, daemon=True).start()  # starting dome_tcp_handler function as a daemon thread
     #-----------------------------------------------------------------------
     def handle_tcp_connection(self):
@@ -92,7 +92,7 @@ class BaseTcpModuleHandler(ABC):
             
             jdata = get_json_data(raw_data)
             if jdata is None:
-                print(f"jdata is None")
+                send_response("jdata is None")
                 self.server.tcpBuffer.ClearData()
                 continue
             if jdata["status"] == "ok":

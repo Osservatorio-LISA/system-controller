@@ -29,7 +29,7 @@ def send_response( response : str | dict ) -> None:
     if isinstance(response, dict):
         response = dumps(response)
     response_buffer.put(response)
-    print(f"response: '{response}'")
+    print(f">{response}")
     return
 
 def get_last_response() -> str:

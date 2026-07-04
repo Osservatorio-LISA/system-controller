@@ -53,17 +53,9 @@ app.register_blueprint(gui_bp)
 
 threading.Thread(target=ext_interface.wait_for_input, daemon=True).start() #terminal input daemon
 
-
-# in main_src on Windows : .venv\Scripts\activate
-# anywhere   : deactivate
-
-#RASPBERRY PI OS (no FULL e no LITE)
-#se no Raspberry pi os 32
-#se no Raspberry pi bookworm
-
-# TODO: you MUST send IP and PORT to devices!!! NOT IMPLEMENTED YET!!!
-
-
+# in src on Windows : .venv\Scripts\activate
+# in src on Linux   : source .venv/bin/acrivate
+# anywhere          : deactivate
 
 # ======================================================================================== #
 #                                           ENTRY_POINT                                    #
@@ -76,12 +68,17 @@ if __name__ == "__main__":
 
     
     # ----------------- TCP SERVER INITIALIZATIONS -----------------------
+    print("\n======= INITIALIZING MODULES =======\n")
     # --- dome ---
+    print("--- DOME ---\n")
     dome = dome_tcp_handler()
     dome.config_dome_tcp_socket()
     dome.start()
     dome.check()
+    print("--- SLIT --- \n")
+    print("--- LX200 --- \n")
     # ---------------- CMD_PARSING INITIALIZATION -----------------------
+    print("\n======= INITIALIZING INPUT =======\n")
     input_thread = threading.Thread(target=cmd_parser, daemon=True)
     input_thread.start()
 #    try:
@@ -92,8 +89,9 @@ if __name__ == "__main__":
 #    
     #------------------ Web interface ------------------------------------
     #NOTE: app.run is blocking()
-    print(f"WEB interface at http://{global_state.get_IP('self')}:{global_state.get_port("self")}/")
+    print("\n======= INITIALIZING WEB INTERFACE =======\n")
+    print(f"[ INFO ] WEB interface at http://{global_state.get_IP('self')}:{global_state.get_port("self")}/")
     app.run(host=global_state.get_IP("self"), port=global_state.get_port("self"), debug=False, use_reloader=False)
 
-    print("Cleaning up and exiting...")
+    print("[ INFO ] Cleaning up and exiting...")
 

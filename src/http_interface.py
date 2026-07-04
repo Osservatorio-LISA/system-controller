@@ -26,7 +26,7 @@ def http_fetch_request(http_host : str, http_method : str, http_url : str, param
 
         # ------- set up connection ------- #
         server = http.client.HTTPConnection(http_host, timeout=5)
-        print(f"sending: {path_with_params}")
+        #print(f"[ DEBUG ] sending: {path_with_params}")
         server.request(http_method, path_with_params, headers=headers , body=body_bytes)
 
         response = server.getresponse()

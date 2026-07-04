@@ -41,7 +41,7 @@ class TcpServer():
             self.serverSocket.bind(('0.0.0.0', serverPort))
             self.serverSocket.settimeout(1.0)
             self.serverSocket.listen()
-            print(f"[ INFO ] server started at port {serverPort}")
+            #  print(f"[ INFO ] server started at port {serverPort}")
         except Exception as e:
             print(f"[ ERROR ] unexpected error : {e}")
             return False
