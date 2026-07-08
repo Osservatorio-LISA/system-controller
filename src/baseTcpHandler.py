@@ -97,6 +97,9 @@ class BaseTcpModuleHandler(ABC):
                 continue
             if jdata["status"] == "ok":
                 self.handle_tcp_data(jdata)
+                #if we get a message with status 'ok' there is no reason to send a heartbeat
+                #NOTE: response to heartbeat will reset heartbeat timer but it's ok I guess
+                self.reset_heartbeat()
             else:
                 self.handle_tcp_error(jdata)
     #-----------------------------------------------------------------------
